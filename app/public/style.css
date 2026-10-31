@@ -1,0 +1,99 @@
+:root{
+  --bg:#0b0d10; --panel:#14171c; --panel2:#1b1f26; --text:#e8ebef; --sub:#97a0ad;
+  --accent:#4fd1a5; --accent2:#6ea8fe; --up:#4fd1a5; --down:#ff6b6b; --radius:14px;
+}
+*{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html,body{ height:100%; margin:0; background:var(--bg); overscroll-behavior-y:none; }
+body{
+  color:var(--text); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  padding-bottom:40px;
+}
+a{ color:inherit; text-decoration:none; }
+
+header{
+  position:sticky; top:0; z-index:10; background:rgba(11,13,16,.92); backdrop-filter:blur(8px);
+  padding:calc(env(safe-area-inset-top,0px) + 12px) 16px 10px; display:flex; align-items:center; gap:10px;
+  border-bottom:1px solid #1b1f26;
+}
+header h1{ font-size:17px; margin:0; flex:1; }
+#backBtn{
+  display:none; appearance:none; border:none; background:rgba(255,255,255,.08); color:#fff;
+  width:32px; height:32px; border-radius:10px; font-size:16px;
+}
+#backBtn.show{ display:block; }
+#refreshBtn{
+  appearance:none; border:none; background:rgba(255,255,255,.08); color:#fff;
+  width:32px; height:32px; border-radius:10px; font-size:15px;
+}
+#refreshBtn.spinning{ animation:spin .8s linear infinite; }
+@keyframes spin{ to{ transform:rotate(360deg); } }
+
+#searchForm{ padding:10px 16px 2px; }
+#searchInput{
+  width:100%; background:var(--panel2); color:#fff; border:none; border-radius:12px;
+  padding:11px 14px; font-size:15px;
+}
+#searchInput::placeholder{ color:#6b7280; }
+
+main{ padding:4px 16px 24px; }
+
+.section-title{
+  font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:.04em;
+  color:var(--sub); margin:20px 2px 8px;
+}
+.card{ background:var(--panel); border-radius:var(--radius); overflow:hidden; }
+.row{
+  display:flex; align-items:center; gap:10px; padding:11px 14px;
+  border-bottom:1px solid #1b1f26;
+}
+.row:last-child{ border-bottom:none; }
+.row .ticker{ font-weight:700; font-size:14.5px; min-width:56px; }
+.row .company{
+  flex:1; min-width:0; color:var(--sub); font-size:12.5px;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.row .price{ font-size:14px; font-variant-numeric:tabular-nums; min-width:58px; text-align:right; }
+.row .change{ font-size:13px; font-weight:700; min-width:58px; text-align:right; font-variant-numeric:tabular-nums; }
+.change.up{ color:var(--up); }
+.change.down{ color:var(--down); }
+
+.skeleton{ padding:20px; color:var(--sub); font-size:13.5px; text-align:center; }
+.error-box{
+  background:#2a1414; border:1px solid #5a2020; color:#ffb3b3; border-radius:var(--radius);
+  padding:14px; font-size:13px; line-height:1.5; margin-top:8px;
+}
+
+/* ticker detail */
+#detailView .ticker-head{ display:flex; align-items:baseline; gap:10px; margin:14px 2px 2px; }
+#detailView .ticker-head h2{ font-size:22px; margin:0; }
+#detailView .ticker-head .price{ font-size:18px; font-variant-numeric:tabular-nums; }
+#detailView .ticker-head .change{ font-size:14px; font-weight:700; }
+#detailView .company-name{ color:var(--sub); font-size:13.5px; margin:2px 2px 0; }
+
+.stat-grid{
+  display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:4px;
+}
+.stat{ background:var(--panel); border-radius:12px; padding:10px 12px; }
+.stat .label{ color:var(--sub); font-size:11px; text-transform:uppercase; letter-spacing:.03em; }
+.stat .value{ font-size:15px; font-weight:600; margin-top:2px; font-variant-numeric:tabular-nums; }
+
+.insider-row{
+  display:flex; flex-direction:column; gap:2px; padding:10px 14px; border-bottom:1px solid #1b1f26;
+}
+.insider-row:last-child{ border-bottom:none; }
+.insider-row .top-line{ display:flex; justify-content:space-between; font-size:13.5px; }
+.insider-row .insider-name{ font-weight:600; }
+.insider-row .meta{ color:var(--sub); font-size:12px; }
+
+details.all-stats{ margin-top:18px; }
+details.all-stats summary{
+  color:var(--accent2); font-size:13px; padding:8px 2px; cursor:pointer;
+}
+.all-stats-grid{
+  display:grid; grid-template-columns:1fr 1fr; gap:1px; background:#1b1f26; border-radius:12px; overflow:hidden; margin-top:6px;
+}
+.all-stats-grid .kv{ background:var(--panel); padding:8px 10px; font-size:12px; }
+.all-stats-grid .kv .k{ color:var(--sub); }
+.all-stats-grid .kv .v{ font-weight:600; }
+
+.empty{ color:var(--sub); font-size:13px; padding:14px; text-align:center; }
