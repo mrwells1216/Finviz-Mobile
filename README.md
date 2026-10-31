@@ -4,7 +4,7 @@ Tools for using [finviz.com](https://finviz.com) comfortably on a phone.
 
 ## [`app/`](app/) — Finviz Mobile Dashboard (current approach)
 
-A real app: a Vercel-hosted backend scrapes Finviz server-side via
+A real app: a Render-hosted backend scrapes Finviz server-side via
 [`finvizfinance`](https://github.com/lit26/finvizfinance) and a custom
 mobile-first frontend renders it — your own site, so "Add to Home Screen"
 works normally, no extension or sandboxing issues. Compact home dashboard
