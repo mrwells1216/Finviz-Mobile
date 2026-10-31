@@ -80,11 +80,11 @@
 
 <section>
   <span class="tag rec">Recommended – always on</span>
-  <h2>Option A: Install via the Userscripts app</h2>
+  <h2>Option A: Install via Stay for Safari</h2>
   <ol>
-    <li>Get the free <b>Userscripts</b> app from the App Store (by Justin Wasack) — it's a Safari extension, not a separate browser.</li>
-    <li>Open <b>Settings → Apps → Safari → Extensions → Userscripts</b> and turn it on, allowing it on finviz.com (or “All Websites”).</li>
-    <li>Open the Userscripts app itself, tap <b>+</b>, and paste in the script below.</li>
+    <li>Get the free <b>Stay for Safari</b> app from the App Store — it's a Safari extension (Tampermonkey/Greasemonkey-compatible), not a separate browser. Core userscript support is free; the paid tier just adds sync and extra ad-block rules, not needed here.</li>
+    <li>Open <b>Settings → Apps → Safari → Extensions → Stay</b> and turn it on, allowing it on finviz.com (or “All Websites”).</li>
+    <li>Open the Stay app itself, go to add/write a new script, and paste in the script below, then save it and make sure it's enabled in your script library.</li>
     <li>Save, then visit any Finviz page in Safari — the control bar appears automatically at the bottom.</li>
   </ol>
   <div class="card">
@@ -676,7 +676,7 @@
   else window.addEventListener("load", function () { setTimeout(start, 600); });
 })();
 </textarea>
-    <button class="copy" onclick="copyText('scriptBox','Script copied — paste it into Userscripts')">Copy script</button>
+    <button class="copy" onclick="copyText('scriptBox','Script copied — paste it into Stay')">Copy script</button>
   </div>
 </section>
 

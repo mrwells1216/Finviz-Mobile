@@ -9,7 +9,7 @@ A self-contained userscript that runs on top of the live Finviz page in Safari �
 - **Zoom mode** — swipe left/right (or tap `‹ ›`) to snap between saved pan+zoom views of the real page.
 - **Read mode** — tap pieces of the real page (a table, the chart, the news feed) and pull them into your own mobile-styled layout, organized into named sections you page between with the same swipe gesture.
 
-**Install:** [`index.html`](index.html) has full copy-paste setup for either the Userscripts app (iOS Safari extension, loads automatically) or a bookmarklet (no install, tap each visit). Once GitHub Pages is turned on for this repo (Settings → Pages → Source: Deploy from branch → `main` / `(root)`), that same page is live at:
+**Install:** [`index.html`](index.html) has full copy-paste setup for either the Stay for Safari app (iOS Safari extension, loads automatically) or a bookmarklet (no install, tap each visit). GitHub Pages is live at:
 
 `https://mrwells1216.github.io/finviz-mobile/`
 
