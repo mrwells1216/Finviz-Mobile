@@ -92,7 +92,7 @@
       .then(function (data) { renderRows(container, data.items || []); })
       .catch(function (err) {
         container.innerHTML = "";
-        container.appendChild(renderErrorBox("Couldn’t load this section", err.message));
+        container.appendChild(renderErrorBox(err.message || "Couldn’t load this section", err.detail));
       });
   }
 
@@ -113,7 +113,7 @@
       .then(function (data) { renderDetailData(ticker, data); })
       .catch(function (err) {
         detailView.innerHTML = "";
-        detailView.appendChild(renderErrorBox("Couldn’t load " + ticker, err.message));
+        detailView.appendChild(renderErrorBox(err.message || ("Couldn’t load " + ticker), err.detail));
       });
   }
 
