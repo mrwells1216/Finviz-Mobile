@@ -11,9 +11,13 @@
 
   // Curated subset of fundamentals shown up top on a ticker page; anything
   // else returned by the API still shows under "All stats" below.
+  // Field names confirmed live against a real /api/quote?t=AAPL response
+  // on 2026-11-01 (the original guesses had a few wrong: "Change" is
+  // actually "Change %", there's no combined "52W Range" -- it's two
+  // separate "52W High"/"52W Low" keys, and dividend is "Dividend TTM").
   var WANTED_STATS = [
-    "Price", "Change", "Market Cap", "P/E", "Forward P/E", "EPS (ttm)",
-    "Dividend %", "Volume", "Avg Volume", "52W Range", "Beta",
+    "Price", "Change %", "Market Cap", "P/E", "Forward P/E", "EPS (ttm)",
+    "Dividend TTM", "Volume", "Avg Volume", "52W High", "52W Low", "Beta",
     "Short Float", "Insider Own", "Inst Own", "Target Price", "RSI (14)",
   ];
 
@@ -88,7 +92,7 @@
 
   function loadSection(apiPath, containerId) {
     var container = document.getElementById(containerId);
-    fetchJSON(apiPath)
+    return fetchJSON(apiPath)
       .then(function (data) { renderRows(container, data.items || []); })
       .catch(function (err) {
         container.innerHTML = "";
@@ -101,9 +105,12 @@
     dashboardView.appendChild(sectionBlock("Top Gainers", "gainersCard"));
     dashboardView.appendChild(sectionBlock("Top Losers", "losersCard"));
     dashboardView.appendChild(sectionBlock("Most Active", "activeCard"));
-    loadSection("/api/gainers?limit=5", "gainersCard");
-    loadSection("/api/losers?limit=5", "losersCard");
-    loadSection("/api/active?limit=5", "activeCard");
+    // Sequential, not parallel: Finviz's Cloudflare protection flagged our
+    // Render IP as rate-limited when the dashboard fired all three screener
+    // requests at once, so these are chained one after another instead.
+    loadSection("/api/gainers?limit=5", "gainersCard")
+      .then(function () { return loadSection("/api/losers?limit=5", "losersCard"); })
+      .then(function () { return loadSection("/api/active?limit=5", "activeCard"); });
   }
 
   /* ---------- ticker detail ---------- */
@@ -124,7 +131,7 @@
 
     var head = document.createElement("div");
     head.className = "ticker-head";
-    var chg = fmtChange(f.Change);
+    var chg = fmtChange(f["Change %"]);
     head.innerHTML =
       "<h2>" + escapeHtml(ticker) + "</h2>" +
       '<span class="price">' + escapeHtml(f.Price || "") + "</span>" +

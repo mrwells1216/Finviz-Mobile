@@ -2,19 +2,28 @@
 Shared scraping/business logic, used by server.py's Flask routes.
 
 STATUS (confirmed live against the deployed app on 2026-11-01):
+- fetch_quote() CONFIRMED WORKING end to end: real fundamentals (Price,
+  Market Cap, P/E, etc.) and real insider trades (names, SEC Form 4 links,
+  dollar values) both come back correctly. The insider-method guess that
+  find_method() landed on was right.
 - run_signal_screener() originally passed {"Signal": signal} inside
-  filters_dict -- confirmed WRONG. The live error was:
-  "Invalid filter 'Signal'. Possible filter: ['Exchange', 'Index', ...]"
-  i.e. filters_dict is validated against Finviz's actual filter list, which
-  has no "Signal" entry. set_filter() takes signal as its own keyword
-  argument instead, separate from filters_dict. Fixed below -- still
-  unconfirmed whether the signal *values* ("Top Gainers" etc.) are spelled
-  exactly as assumed, since that's past the point where it previously
-  errored.
-- fetch_quote()'s insider-trade method name is still unconfirmed across
-  finvizfinance versions, so find_method() scans the finvizfinance(ticker)
-  object at runtime for any callable with "insider" in its name rather than
-  hardcoding a single guess.
+  filters_dict -- confirmed wrong and fixed (signal is set_filter()'s own
+  keyword argument, not a filters_dict key). That fix is confirmed correct
+  too: the error changed from "Invalid filter 'Signal'" to a *different*
+  error further along --
+- CURRENT BLOCKER, UNRESOLVED: Finviz's Cloudflare protection is rejecting
+  the screener.ashx request from Render's IP with a 403 challenge
+  ("source IP is being rate-limited"). finvizfinance's own error message
+  suggests supplying a custom session/proxy via finvizfinance.util
+  specifically to get past that block -- deliberately doing that (spoofing
+  a browser User-Agent because the real one just got blocked) is bot-check
+  circumvention against a site actively trying to stop scraping, so that
+  wasn't implemented here; it needs a real decision from the app's owner
+  about whether/how to proceed, not a default "paper over it" fix.
+  The one thing that *was* changed: the dashboard now loads its three
+  screener sections sequentially instead of firing them in a burst, since
+  the error explicitly cited rate-limiting -- that may or may not be
+  enough on its own.
 """
 import math
 

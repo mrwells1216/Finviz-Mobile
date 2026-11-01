@@ -50,32 +50,48 @@ was consolidated into a single Flask app (`server.py` + `finviz_data.py`)
   "root directory" setting, so the commands above `cd`/path into `app/`
   themselves instead).
 
-## ⚠️ Needs verification on first deploy
+## Status (live-verified 2026-11-01)
 
-This was written from `finvizfinance`'s documented API and general knowledge
-of the library, **not a live install** — the sandbox this was built in
-couldn't reach PyPI or GitHub to confirm exact method/field names before
-writing the code. Two spots are most likely to need a small fix:
+- **`/api/quote?t=TICKER` confirmed working end to end** — real fundamentals
+  and real insider trades (names, SEC Form 4 links, dollar values) both come
+  back correctly. The frontend's curated "Key Stats" field list was fixed to
+  match the real key names (`"Change %"` not `"Change"`, separate `"52W High"`
+  / `"52W Low"` instead of a combined range, `"Dividend TTM"` not
+  `"Dividend %"`).
+- **`/api/gainers` / `/api/losers` / `/api/active`** — the `signal=` fix
+  (below) is confirmed correct, but Finviz's Cloudflare protection then
+  403'd the screener request from Render's IP as rate-limited. The dashboard
+  now loads the three sections sequentially instead of firing all three at
+  once, since the error explicitly cited rate-limiting — that may or may not
+  be enough on its own, **not yet re-verified live**.
 
-1. **`finviz_data.run_signal_screener()`** — `Overview().set_filter(filters_dict={"Signal": "Top Gainers"})`
-   is the documented pattern; `"Signal"` values are assumed to match Finviz's
-   own screener dropdown labels exactly ("Top Gainers", "Top Losers", "Most
-   Active"). If an endpoint 500s, Render's service logs will show the real
-   traceback.
-2. **`finviz_data.fetch_quote()`** — the per-ticker insider-trades method
-   name is uncertain (finvizfinance has renamed things across versions).
-   `find_method()` defensively scans the installed object for any method
-   with "insider" in its name at runtime, so this should keep working even
-   if the guessed name (`ticker_inside_trader`) is wrong — but worth
-   confirming the `insider` array in `/api/quote?t=AAPL` actually has real
-   data, not just an empty list silently swallowing an error.
+  **Unresolved on purpose:** `finvizfinance`'s own error message suggests
+  supplying a custom session with spoofed browser headers specifically to
+  get past that block. That's bot-check circumvention against a site that's
+  actively trying to stop scraping — not something to quietly paper over.
+  If sequential loading alone doesn't clear it, the real options are: accept
+  that these three sections may just not be reliably available this way, or
+  pull gainers/losers/most-active from a different, non-circumvented source
+  (e.g. the FMP connector already in use elsewhere in this project) and keep
+  `finvizfinance` only for the ticker-detail data that's already working.
+  That's a call for whoever owns this app to make, not a default to code
+  around.
 
-Fastest way to check both: after deploying, hit `/api/gainers`, `/api/losers`,
+### Bugs found and fixed along the way
+
+1. `Overview().set_filter(filters_dict={"Signal": ...})` → wrong:
+   `filters_dict` is validated against Finviz's real filter list, which has
+   no `"Signal"` entry. Fixed to `set_filter(signal=...)` — `signal` is its
+   own keyword argument.
+2. Render's auto-deploy wasn't actually wired up (no webhook events fired
+   on push) — needs a one-time permission grant in Render's dashboard
+   (GitHub App repo access) to fix properly; manual `trigger_deploy` calls
+   work as a stopgap.
+3. The frontend's error cards were showing the generic error label twice
+   instead of the actual backend exception — fixed, so any future failure
+   shows the real cause in the app itself, not just a generic message.
+
+Fastest way to check current status: hit `/api/gainers`, `/api/losers`,
 `/api/active`, and `/api/quote?t=AAPL` directly in a browser. Real JSON data
-means it's working; an `{"error": ...}` body or empty `items`/`insider`
-array points at exactly which call needs adjusting.
-
-The Flask app itself (routing, static serving, error handling, JSON shape)
-**was tested end-to-end locally** with `finvizfinance` stubbed out, so any
-remaining issue should be isolated to the scraper calls above, not the
-app's plumbing.
+means it's working; an `{"error": ..., "detail": ...}` body shows the real
+cause.
