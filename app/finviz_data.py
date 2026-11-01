@@ -1,13 +1,17 @@
 """
 Shared scraping/business logic, used by server.py's Flask routes.
 
-VERIFY ON FIRST DEPLOY (same caveats as before, just relocated from the old
-Vercel api/_screener.py and api/quote.py):
-- run_signal_screener(): Overview().set_filter(filters_dict={"Signal": ...})
-  is finvizfinance's documented pattern; "Signal" values are assumed to
-  match Finviz's own screener dropdown labels ("Top Gainers", "Top Losers",
-  "Most Active") exactly.
-- fetch_quote()'s insider-trade method name is uncertain across
+STATUS (confirmed live against the deployed app on 2026-11-01):
+- run_signal_screener() originally passed {"Signal": signal} inside
+  filters_dict -- confirmed WRONG. The live error was:
+  "Invalid filter 'Signal'. Possible filter: ['Exchange', 'Index', ...]"
+  i.e. filters_dict is validated against Finviz's actual filter list, which
+  has no "Signal" entry. set_filter() takes signal as its own keyword
+  argument instead, separate from filters_dict. Fixed below -- still
+  unconfirmed whether the signal *values* ("Top Gainers" etc.) are spelled
+  exactly as assumed, since that's past the point where it previously
+  errored.
+- fetch_quote()'s insider-trade method name is still unconfirmed across
   finvizfinance versions, so find_method() scans the finvizfinance(ticker)
   object at runtime for any callable with "insider" in its name rather than
   hardcoding a single guess.
@@ -53,7 +57,7 @@ def run_signal_screener(signal, limit=5):
     from finvizfinance.screener.overview import Overview
 
     overview = Overview()
-    overview.set_filter(filters_dict={"Signal": signal})
+    overview.set_filter(signal=signal)
     df = overview.screener_view()
 
     if df is None or df.empty:
